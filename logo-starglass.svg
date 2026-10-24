@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="v3-bg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14b8a6"/>
+      <stop offset=".55" stop-color="#06b6d4"/>
+      <stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="v3-card" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#ffffff" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".22"/>
+    </linearGradient>
+    <radialGradient id="v3-glow" cx=".5" cy=".5" r=".5">
+      <stop stop-color="#ffffff" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="2" y="2" width="44" height="44" rx="15" fill="url(#v3-bg)"/>
+  <circle cx="35" cy="12" r="8" fill="#ffffff" opacity=".18"/>
+  <circle cx="12" cy="37" r="6" fill="#ffffff" opacity=".12"/>
+  <g transform="rotate(-8 24 24)">
+    <rect x="11" y="15" width="26" height="18" rx="6" fill="url(#v3-card)" stroke="#ffffff" stroke-opacity=".7" stroke-width="1.2"/>
+    <rect x="11" y="15" width="26" height="7" rx="6" fill="#ffffff" opacity=".22"/>
+  </g>
+  <ellipse cx="24" cy="24" rx="11" ry="11" fill="url(#v3-glow)"/>
+  <path d="M24 13.5Q26.2 21.8 34.5 24Q26.2 26.2 24 34.5Q21.8 26.2 13.5 24Q21.8 21.8 24 13.5Z" fill="#ffffff"/>
+  <path d="M24 13.5Q26.2 21.8 34.5 24L24 24Z" fill="#a5f3fc" opacity=".55"/>
+  <circle cx="33" cy="15" r="1.6" fill="#ffffff" opacity=".95"/>
+  <circle cx="15" cy="33" r="1.2" fill="#ffffff" opacity=".7"/>
+</svg>

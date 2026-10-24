@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.png" type="image/png">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI 客服 · 为你精选</title>
+<meta name="description" content="全店 AI 客服：价格、发货、到账、售后，随问随答。">
+<script>try{var _t=localStorage.getItem('shop-theme')||'auto';if(_t==='dark'||(_t==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
+<style>
+/* ===== 设计变量（与全站统一） ===== */
+.shop-tokens{--font-body:Inter,"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;--bg:#f5f7fb;--surface:#fff;--surface-2:#f0f4f8;--text:#172033;--muted:#697487;--line:rgba(20,39,66,.11);--line-strong:rgba(20,39,66,.2);--accent:#12a89a;--accent-strong:#087f75;--accent-soft:rgba(18,168,154,.1);--accent-line:rgba(18,168,154,.35);--on-accent:#062c29;--shadow-soft:0 8px 28px rgba(31,51,79,.07);--shadow:0 20px 55px rgba(31,51,79,.11);--shadow-primary:0 10px 25px rgba(18,168,154,.18);--r-pill:999px}
+.dark .shop-tokens,.dark.shop-tokens{--bg:#0b1120;--surface:#131b2e;--surface-2:#182136;--text:#e9eef6;--muted:#8f9ab2;--line:rgba(148,170,210,.13);--line-strong:rgba(148,170,210,.22);--accent:#2dd4bf;--accent-strong:#5eead4;--accent-soft:rgba(45,212,191,.12);--accent-line:rgba(45,212,191,.4);--on-accent:#03211c;--shadow-soft:0 8px 28px rgba(0,0,0,.4);--shadow:0 20px 55px rgba(0,0,0,.5);--shadow-primary:0 10px 25px rgba(45,212,191,.22)}
+.dark{color-scheme:dark}
+/* ===== 页面骨架 ===== */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+body.shop-tokens{background:var(--bg);color:var(--text)}
+.ai-page{height:100dvh;display:flex;flex-direction:column;max-width:1100px;margin:0 auto;width:100%;padding:0 12px}
+/* ===== 聊天区 ===== */
+.ai-main{flex:1;overflow-y:auto;padding:28px 20px 16px;scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+.ai-main::-webkit-scrollbar{width:5px}
+.ai-main::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:99px}
+/* 欢迎区：ChatGPT 式简洁居中 */
+.ai-hero{text-align:center;padding:48px 16px 8px;animation:aiIn .5s cubic-bezier(.2,.8,.2,1)}
+.ai-hero.hide{display:none}
+.ai-hero-avatar{width:64px;height:64px;margin:0 auto 20px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#67dfd4);display:grid;place-items:center;box-shadow:var(--shadow-primary)}
+.ai-hero-avatar svg{width:32px;height:32px;fill:#fff}
+.ai-hero h1{margin:0 0 10px;font-size:28px;font-weight:700;letter-spacing:-.02em}
+.ai-hero p{margin:0 0 28px;color:var(--muted);font-size:15px;line-height:1.6}
+.ai-suggest{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:640px;margin:0 auto}
+.ai-card{border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:10px 20px;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--text);box-shadow:var(--shadow-soft);transition:all .25s}
+.ai-card:hover{transform:translateY(-2px);border-color:var(--accent-line);box-shadow:var(--shadow);color:var(--accent-strong)}
+.ai-card b{font-weight:600}
+/* 消息：ChatGPT 式 —— AI 无气泡纯文本，用户浅色气泡 */
+.ai-msgs{display:flex;flex-direction:column;gap:22px;max-width:900px;margin:0 auto;width:100%}
+.ai-row{display:flex;gap:14px;align-items:flex-start;animation:aiIn .35s cubic-bezier(.2,.8,.2,1)}
+.ai-row.user{justify-content:flex-end}
+@keyframes aiIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.ai-avatar{width:32px;height:32px;flex:none;border-radius:50%;background:linear-gradient(135deg,var(--accent),#67dfd4);display:grid;place-items:center;margin-top:2px}
+.ai-avatar svg{width:17px;height:17px;fill:#fff}
+.ai-bubble{font-size:15.5px;line-height:1.75;word-break:break-word;min-width:0}
+.ai-row.ai .ai-bubble{color:var(--text);padding:2px 0;max-width:100%}
+.ai-row.user .ai-bubble{max-width:min(75%,600px);padding:12px 18px;border-radius:22px;background:var(--surface-2);color:var(--text);border:1px solid var(--line)}
+.ai-bubble.typing{display:flex;gap:6px;padding:8px 0;align-items:center}
+.ai-bubble.typing i{width:8px;height:8px;border-radius:50%;background:var(--muted);animation:aiBlink 1.2s infinite}
+.ai-bubble.typing i:nth-child(2){animation-delay:.2s}
+.ai-bubble.typing i:nth-child(3){animation-delay:.4s}
+@keyframes aiBlink{0%,100%{opacity:.3}50%{opacity:1}}
+/* ===== 输入区：ChatGPT 式大圆角输入框 ===== */
+.ai-inputbar{padding:12px 20px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 60%,transparent)}
+.ai-inputwrap{max-width:900px;margin:0 auto;display:flex;gap:10px;align-items:flex-end;background:var(--surface);border:1px solid var(--line-strong);border-radius:28px;padding:10px 10px 10px 22px;box-shadow:var(--shadow-soft);transition:border-color .25s,box-shadow .25s}
+.ai-inputwrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft),var(--shadow-soft)}
+.ai-inputwrap input{flex:1;min-width:0;border:0;background:none;outline:none;font:400 16px/1.5 var(--font-body);color:var(--text);padding:12px 0;resize:none}
+.ai-inputwrap input::placeholder{color:var(--muted)}
+.ai-send{width:40px;height:40px;flex:none;border:0;border-radius:50%;background:var(--text);cursor:pointer;display:grid;place-items:center;transition:transform .2s,opacity .2s,background .2s}
+.ai-send:hover{transform:scale(1.06)}
+.ai-send:active{transform:scale(.94)}
+.ai-send:disabled{opacity:.25;cursor:default;transform:none}
+.ai-send svg{width:17px;height:17px;fill:var(--bg);margin-left:1px}
+.ai-note{max-width:900px;margin:10px auto 0;text-align:center;font-size:11px;color:var(--muted)}
+@media(max-width:640px){
+  .ai-hero h1{font-size:23px}
+  .ai-hero{padding:32px 12px 8px}
+  .ai-main{padding:20px 14px 12px}
+  .ai-inputbar{padding:10px 12px calc(12px + env(safe-area-inset-bottom))}
+  .ai-bubble{font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){
+  .ai-hero-avatar,.ai-title .dot,.ai-row,.ai-hero{animation:none}
+  .ai-card,.ai-back,.ai-send{transition:none}
+}
+</style>
+</head>
+<body class="shop-tokens">
+<!-- SHOP-SIDEBAR -->
+<style>
+/* ===== 全站左侧边栏 v5（胶囊导航：商品 / AI 客服 / 设置） ===== */
+.shop-sidebar{position:fixed;left:0;top:0;bottom:0;width:248px;z-index:9000;display:flex;flex-direction:column;background:var(--surface,#fff);border-right:1px solid var(--line,rgba(20,39,66,.11));padding:20px 14px 16px;transition:transform .32s cubic-bezier(.2,.8,.2,1)}
+/* Logo 行 */
+.shop-sb-toprow{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+a.shop-sb-logo{display:flex;align-items:center;gap:10px;padding:2px 6px;text-decoration:none;color:var(--text,#172033)}
+.shop-sb-logo .mark{width:44px;height:44px;flex:none;border-radius:13px;overflow:hidden;transition:transform .25s}
+a.shop-sb-logo:hover .mark{transform:scale(1.05)}
+.shop-sb-logo .mark img{width:100%;height:100%;display:block;object-fit:cover}
+.shop-sb-logo b{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.collapse-btn{display:grid;place-items:center;width:32px;height:32px;flex:none;border:0;border-radius:10px;background:none;color:var(--muted,#697487);cursor:pointer;transition:background .2s,color .2s}
+.collapse-btn:hover{background:var(--surface-2,#f0f4f8);color:var(--text,#172033)}
+.collapse-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* 胶囊导航 */
+.shop-sb-nav{display:flex;flex-direction:column;gap:8px}
+.shop-sb-pill{display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:999px;color:var(--muted,#697487);font-size:14px;font-weight:600;text-decoration:none;transition:background .2s,color .2s,transform .15s}
+.shop-sb-pill svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.shop-sb-pill:hover{background:var(--surface-2,#eef2f6);color:var(--text,#172033)}
+.shop-sb-pill:hover svg{transform:scale(1.08)}
+.shop-sb-pill:active{transform:scale(.98)}
+.shop-sb-pill.is-on{background:var(--accent-soft,rgba(18,168,154,.13));color:var(--accent-strong,#087f75);box-shadow:inset 0 0 0 1px rgba(18,168,154,.22)}
+.dark .shop-sb-pill.is-on{color:#5eead4}
+/* 隐藏态：侧边栏整个滑出 */
+body.sb-hidden .shop-sidebar{transform:translateX(-105%)}
+/* 主内容区让位：body 内边距方案，不破坏内部 max-width 居中 */
+body.has-shop-sidebar{padding-left:248px}
+body.sb-hidden.has-shop-sidebar{padding-left:0}
+/* 左上角展开浮钮 */
+.shop-sb-expand{display:none;position:fixed;left:14px;top:14px;z-index:9001;width:42px;height:42px;border-radius:14px;border:1px solid var(--line,rgba(20,39,66,.11));background:var(--surface,#fff);color:var(--muted,#697487);cursor:pointer;box-shadow:0 8px 24px rgba(15,28,50,.14);place-items:center;transition:color .2s,transform .15s}
+.shop-sb-expand:hover{color:var(--text,#172033)}
+.shop-sb-expand:active{transform:scale(.94)}
+.shop-sb-expand svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body.sb-hidden .shop-sb-expand{display:grid}
+@media(max-width:1023.98px){.shop-sb-expand{display:none!important}}
+/* ===== 移动端底部选项卡（替代侧边栏） ===== */
+.shop-tabbar{display:none}
+@media(max-width:1023.98px){
+  body.has-shop-sidebar{padding-left:20px}
+  /* 侧边栏及抽屉在移动端彻底隐藏 */
+  .shop-sidebar,.shop-sb-toggle,.shop-sb-expand,.shop-sb-mask{display:none!important}
+  /* 底部胶囊选项卡 */
+  .shop-tabbar{display:flex;position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:9000;background:var(--surface,#fff);border:1px solid var(--line,rgba(20,39,66,.11));border-radius:28px;box-shadow:0 12px 40px rgba(15,28,50,.18);padding:8px 6px}
+  .shop-tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 6px;border-radius:20px;color:var(--muted,#697487);font-size:11px;font-weight:600;text-decoration:none;transition:background .2s,color .2s}
+  .shop-tabbar a svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .shop-tabbar a:active{transform:scale(.96)}
+  .shop-tabbar a.is-on{color:var(--accent-strong,#087f75);background:var(--accent-soft,rgba(18,168,154,.13))}
+  .dark .shop-tabbar a.is-on{color:#5eead4}
+  /* 给底部选项卡留出空间 */
+  body.has-shop-sidebar{padding-bottom:96px}
+  /* AI 聊天页是 100dvh 固定高度，单独留出选项卡位置，避免输入框被盖住 */
+  .ai-page{height:calc(100dvh - 104px)!important}
+}
+@media (prefers-reduced-motion:reduce){.shop-sidebar,.shop-sb-pill,.shop-tabbar a{transition:none}}
+</style>
+<button class="shop-sb-expand" id="shopExpandBtn" aria-label="展开侧边栏"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9.5 4v16"/><path d="M13.5 12l2.5-2.5M13.5 12l2.5 2.5" stroke-width="1.6"/></svg></button>
+<aside class="shop-sidebar" id="shopSidebar" aria-label="站点导航">
+  <div class="shop-sb-toprow"><a class="shop-sb-logo" href="index.html"><span class="mark"><img src="logo.png" alt="为你精选"></span><b>为你精选</b></a><button class="collapse-btn" id="shopCollapseBtn" aria-label="收起侧边栏"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9.5 4v16"/><path d="M14.5 12l-2.5-2.5M14.5 12L12 14.5" stroke-width="1.6"/></svg></button></div>
+  <nav class="shop-sb-nav">
+    <a class="shop-sb-pill" data-sb="shop" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>商品</span></a>
+    <a class="shop-sb-pill" data-sb="chat" href="ai.html"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span>AI 客服</span></a>
+    <a class="shop-sb-pill" data-sb="settings" href="settings.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>设置</span></a>
+  </nav>
+</aside>
+<nav class="shop-tabbar" aria-label="底部导航">
+  <a data-sb="shop" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>商品</span></a>
+  <a data-sb="chat" href="ai.html"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span>AI 客服</span></a>
+  <a data-sb="settings" href="settings.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1 4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>设置</span></a>
+</nav>
+<script>(function(){
+document.body.classList.add('has-shop-sidebar');
+var p=location.pathname.split('/').pop()||'index.html';
+var cur='shop';
+if(p.indexOf('ai')===0)cur='chat';
+else if(p.indexOf('settings')===0)cur='settings';
+else if(p.indexOf('chatgpt')===0||p.indexOf('x-premium')===0)cur='shop';
+var els=document.querySelectorAll('[data-sb]');
+for(var i=0;i<els.length;i++)els[i].classList.toggle('is-on',els[i].getAttribute('data-sb')===cur);
+/* 收起/展开（桌面端） */
+var HK='shop-sb-hidden';
+function setHidden(o){document.body.classList.toggle('sb-hidden',o);try{localStorage.setItem(HK,o?'1':'0')}catch(e){}}
+try{
+var _h=localStorage.getItem(HK);
+if(_h===null&&localStorage.getItem('shop-sb-collapsed')==='1')_h='1';
+if(_h==='1'&&window.innerWidth>1023)document.body.classList.add('sb-hidden');
+}catch(e){}
+var cb=document.getElementById('shopCollapseBtn');
+if(cb)cb.addEventListener('click',function(){setHidden(true)});
+var eb=document.getElementById('shopExpandBtn');
+if(eb)eb.addEventListener('click',function(){setHidden(false)});
+/* 主题（设置页） */
+var K='shop-theme';
+function sysD(){return window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches}
+function mode(){try{return localStorage.getItem(K)||'auto'}catch(e){return'auto'}}
+function apply(){var m=mode();var d=m==='dark'||(m==='auto'&&sysD());document.documentElement.classList.toggle('dark',d);var b=document.querySelectorAll('#setThemes [data-theme],#shopSetThemes [data-theme]');for(var i=0;i<b.length;i++)b[i].classList.toggle('is-on',b[i].getAttribute('data-theme')===m)}
+function init(){apply();var b=document.querySelectorAll('#setThemes [data-theme],#shopSetThemes [data-theme]');for(var i=0;i<b.length;i++)(function(x){x.addEventListener('click',function(){try{localStorage.setItem(K,x.getAttribute('data-theme'))}catch(e){}apply()})})(b[i]);var mq=window.matchMedia&&matchMedia('(prefers-color-scheme:dark)');if(mq){var f=function(){if(mode()==='auto')apply()};if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f)}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="ai-page">
+  
+  <main class="ai-main" id="aiMain">
+    <div class="ai-hero" id="aiHero">
+      <div class="ai-hero-avatar"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.5-6.3 4.5L8 13.8 2 9.2h7.6z"/></svg></div>
+      <h1>有什么可以帮你？</h1>
+      <p>全店商品的价格、发货、到账、售后，随便问</p>
+      <div class="ai-suggest">
+        <div class="ai-card" data-q="ChatGPT Plus 多少钱？"><b>ChatGPT Plus 多少钱？</b></div>
+        <div class="ai-card" data-q="X Premium 有哪些套餐？"><b>X Premium 有哪些套餐？</b></div>
+        <div class="ai-card" data-q="怎么发货？多久到账？"><b>怎么发货？多久到账？</b></div>
+        <div class="ai-card" data-q="有优惠活动吗？"><b>有优惠活动吗？</b></div>
+      </div>
+    </div>
+    <div class="ai-msgs" id="aiMsgs"></div>
+  </main>
+  <footer class="ai-inputbar">
+    <div class="ai-inputwrap">
+      <input id="aiText" type="text" placeholder="问问价格、发货、到账…" maxlength="500" autocomplete="off" aria-label="输入问题">
+      <button class="ai-send" id="aiSend" aria-label="发送"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+    </div>
+    <p class="ai-note">AI 回答仅供参考，请以下单页实际价格为准</p>
+  </footer>
+</div>
+
+<script>(function(){
+var API='https://round-field-524c.qlinghl.workers.dev/api/chat/stream';
+var main=document.getElementById('aiMain'),msgs=document.getElementById('aiMsgs'),
+hero=document.getElementById('aiHero'),text=document.getElementById('aiText'),sendBtn=document.getElementById('aiSend');
+var history=[],started=false;
+function scrollDown(){main.scrollTop=main.scrollHeight}
+function addMsg(role,txt){
+var row=document.createElement('div');row.className='ai-row '+role;
+if(role==='ai'){var av=document.createElement('div');av.className='ai-avatar';
+av.innerHTML='<svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.5-6.3 4.5L8 13.8 2 9.2h7.6z"/></svg>';
+row.appendChild(av);}
+var b=document.createElement('div');b.className='ai-bubble '+role;b.textContent=txt;row.appendChild(b);
+msgs.appendChild(row);scrollDown();return row;}
+function send(q){
+var msg=(q!==undefined?q:text.value).trim();
+if(!msg||sendBtn.disabled)return;
+if(!started){started=true;hero.classList.add('hide');}
+text.value='';addMsg('user',msg);
+history.push({role:'user',content:msg});
+var row=addMsg('ai','');var tp=row.querySelector('.ai-bubble');tp.classList.add('typing');tp.innerHTML='<i></i><i></i><i></i>';
+sendBtn.disabled=true;
+fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({message:msg,history:history.slice(-12)})})
+.then(function(r){
+if(!r.ok||!r.body)throw new Error('bad');
+row.remove();sendBtn.disabled=false;
+var bubbleRow=addMsg('ai','');var bp=bubbleRow.querySelector('.ai-bubble');
+var reader=r.body.getReader();var dec=new TextDecoder();var buf='';var full='';
+function pump(){
+return reader.read().then(function(res){
+if(res.done){finish();return;}
+buf+=dec.decode(res.value,{stream:true});
+var parts=buf.split('\n\n');buf=parts.pop();
+for(var i=0;i<parts.length;i++){
+var line=parts[i].trim();
+if(line.indexOf('data:')!==0)continue;
+var payload=line.slice(5).trim();
+if(payload==='[DONE]'){finish();return;}
+try{
+var obj=JSON.parse(payload);
+if(obj.delta){full+=obj.delta;bp.textContent=full;}
+else if(obj.error){full=obj.error;bp.textContent=full;finish();return;}
+}catch(e){}
+}
+return pump();
+});
+}
+function finish(){
+try{reader.cancel();}catch(e){}
+history.push({role:'assistant',content:full||'抱歉，我暂时答不上来，换个问法试试？'});
+if(history.length>24)history=history.slice(-24);
+}
+return pump();
+})
+.catch(function(){row.remove();sendBtn.disabled=false;addMsg('ai','网络开小差了，请稍后再试试。');});
+}
+sendBtn.addEventListener('click',function(){send();});
+text.addEventListener('keydown',function(e){if(e.key==='Enter')send();});
+document.querySelectorAll('.ai-card').forEach(function(c){
+c.addEventListener('click',function(){send(c.getAttribute('data-q'));});});
+if(!/Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){text.focus();}
+})();</script>
+</body>
+</html>

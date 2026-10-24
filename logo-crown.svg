@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="lg-bg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#16294d"/>
+      <stop offset="1" stop-color="#0a1730"/>
+    </linearGradient>
+    <linearGradient id="lg-card" x1="0" y1="0" x2="48" y2="36" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6ea8ff"/>
+      <stop offset=".5" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#1e40af"/>
+    </linearGradient>
+    <linearGradient id="lg-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#ffe9b0"/>
+      <stop offset=".5" stop-color="#f5c451"/>
+      <stop offset="1" stop-color="#d99a1f"/>
+    </linearGradient>
+    <filter id="lg-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect x="2" y="2" width="44" height="44" rx="15" fill="url(#lg-bg)"/>
+  <g transform="rotate(-8 24 24)">
+    <rect x="8" y="16" width="32" height="20" rx="5" fill="url(#lg-card)" filter="url(#lg-glow)"/>
+    <path d="M8 21a5 5 0 0 1 5-5h27v6H8z" fill="#ffffff" opacity=".18"/>
+    <path d="M15 36L33 16" stroke="#ffffff" stroke-opacity=".22" stroke-width="3" stroke-linecap="round"/>
+    <rect x="12" y="21.5" width="7.5" height="6" rx="1.4" fill="url(#lg-gold)"/>
+    <path d="M14.5 21.5v6M17 21.5v6M12 24.5h7.5" stroke="#a86f0e" stroke-width=".9" opacity=".7" fill="none"/>
+    <g fill="url(#lg-gold)">
+      <path d="M29 30.5V23l3 2.5L34.5 20.5L37 25.5L40 23v7.5z"/>
+      <rect x="29" y="30" width="11" height="2.6" rx="1.2"/>
+      <circle cx="29" cy="21.3" r="1.6"/>
+      <circle cx="34.5" cy="18.8" r="1.8"/>
+      <circle cx="40" cy="21.3" r="1.6"/>
+    </g>
+  </g>
+</svg>

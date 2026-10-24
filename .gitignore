@@ -1,0 +1,8 @@
+node_modules/
+dist/
+backup-*/
+deploy-*/
+staging-*/
+notes/
+*.zip
+*.tmp

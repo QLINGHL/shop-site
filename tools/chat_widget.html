@@ -1,0 +1,127 @@
+<!-- SHOP-AI-CHAT -->
+<style>
+/* ===== 全店 AI 客服：悬浮窗 ===== */
+.shop-ai-fab{position:fixed;right:22px;bottom:22px;z-index:9990;width:60px;height:60px;border:0;border-radius:50%;background:linear-gradient(135deg,var(--accent,#12a89a),#67dfd4);box-shadow:0 10px 25px rgba(18,168,154,.35);cursor:pointer;display:grid;place-items:center;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
+.shop-ai-fab:hover{transform:translateY(-3px) scale(1.06);box-shadow:0 16px 34px rgba(18,168,154,.45)}
+.shop-ai-fab:active{transform:scale(.96)}
+.shop-ai-fab svg{width:27px;height:27px;fill:#fff}
+.shop-ai-fab::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(18,168,154,.35);animation:shopAiPulse 2.6s ease-out infinite;pointer-events:none}
+@keyframes shopAiPulse{0%{transform:scale(.85);opacity:.9}70%{transform:scale(1.12);opacity:0}100%{transform:scale(1.12);opacity:0}}
+.shop-ai-fab.has-replay{bottom:86px}
+/* ===== 聊天面板 ===== */
+.shop-ai-panel{position:fixed;right:22px;bottom:94px;z-index:9991;width:400px;max-width:calc(100vw - 32px);height:620px;max-height:calc(100vh - 130px);display:flex;flex-direction:column;border-radius:24px;overflow:hidden;background:var(--surface,#fff);border:1px solid var(--line,rgba(20,39,66,.11));box-shadow:0 24px 70px rgba(15,28,50,.28);opacity:0;transform:translateY(24px) scale(.96);transform-origin:bottom right;pointer-events:none;transition:opacity .32s cubic-bezier(.2,.8,.2,1),transform .32s cubic-bezier(.2,.8,.2,1)}
+.shop-ai-panel.open{opacity:1;transform:none;pointer-events:auto}
+/* 头部 */
+.shop-ai-head{display:flex;align-items:center;gap:12px;padding:16px 18px;background:linear-gradient(135deg,#0e9a8c,#0d8a7d 60%,#0b7a6e);color:#fff;flex:none}
+.shop-ai-avatar{width:42px;height:42px;flex:none;border-radius:50%;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.35);display:grid;place-items:center;backdrop-filter:blur(4px)}
+.shop-ai-avatar svg{width:22px;height:22px;fill:#fff}
+.shop-ai-head .info{flex:1;min-width:0}
+.shop-ai-head .info b{display:block;font-size:15px;font-weight:750;letter-spacing:.01em}
+.shop-ai-head .info span{display:flex;align-items:center;gap:6px;font-size:11.5px;opacity:.92;margin-top:2px}
+.shop-ai-head .dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:shopAiBlink 2s infinite}
+.shop-ai-close{margin-left:auto;width:32px;height:32px;flex:none;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:18px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:background .2s,transform .2s}
+.shop-ai-close:hover{background:rgba(255,255,255,.28);transform:rotate(90deg)}
+/* 消息区 */
+.shop-ai-msgs{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:12px;background:var(--bg,#f5f7fb);scrollbar-width:thin;scrollbar-color:var(--line-strong,rgba(20,39,66,.2)) transparent}
+.shop-ai-msgs::-webkit-scrollbar{width:5px}
+.shop-ai-msgs::-webkit-scrollbar-thumb{background:var(--line-strong,rgba(20,39,66,.2));border-radius:99px}
+.shop-ai-row{display:flex;gap:8px;align-items:flex-end;animation:shopAiIn .35s cubic-bezier(.2,.8,.2,1)}
+.shop-ai-row.user{justify-content:flex-end}
+@keyframes shopAiIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.shop-ai-row .mini-avatar{width:28px;height:28px;flex:none;border-radius:50%;background:linear-gradient(135deg,var(--accent,#12a89a),#67dfd4);display:grid;place-items:center;box-shadow:0 4px 10px rgba(18,168,154,.3)}
+.shop-ai-row .mini-avatar svg{width:15px;height:15px;fill:#fff}
+.shop-ai-msg{max-width:78%;padding:11px 15px;border-radius:16px;font-size:14px;line-height:1.65;word-break:break-word}
+.shop-ai-row.ai .shop-ai-msg{background:var(--surface,#fff);color:var(--text,#172033);border:1px solid var(--line,rgba(20,39,66,.11));border-bottom-left-radius:6px;box-shadow:0 2px 8px rgba(15,28,50,.06)}
+.shop-ai-row.user .shop-ai-msg{background:linear-gradient(135deg,var(--accent,#12a89a),#0d8a7d);color:#fff;border-bottom-right-radius:6px;box-shadow:0 4px 12px rgba(18,168,154,.28)}
+.shop-ai-msg.typing{display:flex;gap:5px;padding:15px 18px;align-items:center}
+.shop-ai-msg.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted,#697487);animation:shopAiBlink 1.2s infinite}
+.shop-ai-msg.typing i:nth-child(2){animation-delay:.2s}
+.shop-ai-msg.typing i:nth-child(3){animation-delay:.4s}
+@keyframes shopAiBlink{0%,100%{opacity:.3}50%{opacity:1}}
+/* 快捷问题 */
+.shop-ai-quick{display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;background:var(--surface,#fff);border-top:1px solid var(--line,rgba(20,39,66,.11));flex:none}
+.shop-ai-quick button{border:1px solid var(--accent-line,rgba(18,168,154,.35));background:var(--accent-soft,rgba(18,168,154,.1));color:var(--accent-strong,#087f75);font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s}
+.shop-ai-quick button:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(18,168,154,.2);background:rgba(18,168,154,.16)}
+.dark .shop-ai-quick button{color:#5eead4}
+/* 输入区 */
+.shop-ai-input{display:flex;gap:10px;padding:14px 16px;background:var(--surface,#fff);border-top:1px solid var(--line,rgba(20,39,66,.11));flex:none;align-items:center}
+.shop-ai-input input{flex:1;min-width:0;border:1px solid var(--line,rgba(20,39,66,.11));border-radius:999px;padding:11px 16px;font-size:14px;font-family:inherit;background:var(--bg,#f5f7fb);color:var(--text,#172033);outline:none;transition:border-color .2s,box-shadow .2s}
+.shop-ai-input input:focus{border-color:var(--accent,#12a89a);box-shadow:0 0 0 3px var(--accent-soft,rgba(18,168,154,.12))}
+.shop-ai-input input::placeholder{color:var(--muted,#697487)}
+.shop-ai-send{border:0;border-radius:50%;width:44px;height:44px;flex:none;background:linear-gradient(135deg,var(--accent,#12a89a),#67dfd4);box-shadow:0 6px 16px rgba(18,168,154,.35);cursor:pointer;display:grid;place-items:center;transition:transform .2s,box-shadow .2s,opacity .2s}
+.shop-ai-send:hover{transform:scale(1.08);box-shadow:0 8px 20px rgba(18,168,154,.45)}
+.shop-ai-send:active{transform:scale(.94)}
+.shop-ai-send svg{width:18px;height:18px;fill:#fff;margin-left:2px}
+.shop-ai-send:disabled{opacity:.45;cursor:default;transform:none}
+@media(max-width:480px){.shop-ai-panel{right:12px;left:12px;width:auto;bottom:86px;border-radius:20px}.shop-ai-fab{right:16px;bottom:16px}}
+@media (prefers-reduced-motion:reduce){.shop-ai-fab::after,.shop-ai-head .dot,.shop-ai-row{animation:none}.shop-ai-panel{transition:none}}
+</style>
+<div class="shop-ai-fab" id="shopAiFab" aria-label="AI 客服" role="button" tabindex="0">
+<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.54.35 3 .96 4.31L2 22l5.85-1.96A9.96 9.96 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.48 0-2.9-.4-4.13-1.1l-.3-.18-3.47 1.16 1.16-3.47-.18-.3A7.96 7.96 0 0 1 4 12C4 7.59 7.59 4 12 4s8 3.59 8 8-3.59 8-8 8z"/><path d="M9 8.2c0-.5.4-.9.9-.9h4.2c.5 0 .9.4.9.9v.1c0 .5-.4.9-.9.9H9.9c-.5 0-.9-.4-.9-.9v-.1zm0 3.1c0-.5.4-.9.9-.9h4.2c.5 0 .9.4.9.9v.1c0 .5-.4.9-.9.9H9.9c-.5 0-.9-.4-.9-.9v-.1zm0 3.1c0-.5.4-.9.9-.9h2.2c.5 0 .9.4.9.9v.1c0 .5-.4.9-.9.9H9.9c-.5 0-.9-.4-.9-.9v-.1z"/></svg>
+</div>
+<div class="shop-ai-panel" id="shopAiPanel" role="dialog" aria-label="AI 客服聊天">
+<div class="shop-ai-head">
+<div class="shop-ai-avatar"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.5-6.3 4.5L8 13.8 2 9.2h7.6z"/></svg></div>
+<div class="info"><b>AI 客服</b><span><i class="dot"></i>全店商品问答 · 在线</span></div>
+<button class="shop-ai-close" id="shopAiClose" aria-label="关闭">×</button>
+</div>
+<div class="shop-ai-msgs" id="shopAiMsgs"></div>
+<div class="shop-ai-quick" id="shopAiQuick">
+<button data-q="查价格">查价格</button>
+<button data-q="怎么发货？">怎么发货</button>
+<button data-q="多久到账？">多久到账</button>
+<button data-q="有优惠吗？">有优惠吗</button>
+</div>
+<div class="shop-ai-input">
+<input id="shopAiText" type="text" placeholder="问问价格、发货、到账…" maxlength="500" autocomplete="off">
+<button class="shop-ai-send" id="shopAiSend" aria-label="发送"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+</div>
+</div>
+<script>(function(){
+var API='__API_URL__';
+var fab=document.getElementById('shopAiFab'),panel=document.getElementById('shopAiPanel'),
+msgs=document.getElementById('shopAiMsgs'),text=document.getElementById('shopAiText'),
+sendBtn=document.getElementById('shopAiSend'),quick=document.getElementById('shopAiQuick');
+if(document.querySelector('.demo-replay'))fab.classList.add('has-replay');
+var history=[],opened=false;
+function addMsg(role,txt){
+var row=document.createElement('div');row.className='shop-ai-row '+role;
+if(role==='ai'){var av=document.createElement('div');av.className='mini-avatar';
+av.innerHTML='<svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.5-6.3 4.5L8 13.8 2 9.2h7.6z"/></svg>';
+row.appendChild(av);}
+var d=document.createElement('div');d.className='shop-ai-msg '+role;d.textContent=txt;row.appendChild(d);
+msgs.appendChild(row);msgs.scrollTop=msgs.scrollHeight;return row;}
+function toggle(open){
+panel.classList.toggle('open',open);
+if(open&&!opened){opened=true;
+addMsg('ai','你好呀，我是本店的 AI 客服～全店商品的价格、发货、到账、售后问题都可以问我，知无不言。');}}
+fab.addEventListener('click',function(){toggle(!panel.classList.contains('open'));});
+fab.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle(!panel.classList.contains('open'));}});
+document.getElementById('shopAiClose').addEventListener('click',function(){toggle(false);});
+function send(q){
+var msg=(q!==undefined?q:text.value).trim();
+if(!msg||sendBtn.disabled)return;
+text.value='';
+addMsg('user',msg);
+history.push({role:'user',content:msg});
+var row=addMsg('ai','');var tp=row.querySelector('.shop-ai-msg');tp.classList.add('typing');tp.innerHTML='<i></i><i></i><i></i>';
+sendBtn.disabled=true;
+fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({message:msg,history:history.slice(-12)})})
+.then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});})
+.then(function(res){
+row.remove();sendBtn.disabled=false;
+var reply=(res.j&&res.j.reply)||'抱歉，我暂时答不上来，换个问法试试？';
+addMsg('ai',reply);
+history.push({role:'assistant',content:reply});
+if(history.length>24)history=history.slice(-24);
+})
+.catch(function(){
+row.remove();sendBtn.disabled=false;
+addMsg('ai','网络开小差了，请稍后再试试。');});
+}
+sendBtn.addEventListener('click',function(){send();});
+text.addEventListener('keydown',function(e){if(e.key==='Enter')send();});
+quick.addEventListener('click',function(e){
+var b=e.target.closest('button');if(b)send(b.getAttribute('data-q'));});
+})();</script>

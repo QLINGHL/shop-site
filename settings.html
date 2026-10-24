@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.png" type="image/png">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>设置 · 为你精选</title>
+<meta name="description" content="外观、主题等设置。">
+<script>try{var _t=localStorage.getItem('shop-theme')||'auto';if(_t==='dark'||(_t==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.add('dark')}catch(e){}</script>
+<style>
+/* ===== 设计变量（与全站统一） ===== */
+.shop-tokens{--font-body:Inter,"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;--bg:#f5f7fb;--surface:#fff;--surface-2:#f0f4f8;--text:#172033;--muted:#697487;--line:rgba(20,39,66,.11);--line-strong:rgba(20,39,66,.2);--accent:#12a89a;--accent-strong:#087f75;--accent-soft:rgba(18,168,154,.1);--accent-line:rgba(18,168,154,.35);--shadow-soft:0 8px 28px rgba(31,51,79,.07);--shadow:0 20px 55px rgba(31,51,79,.11);--r-pill:999px}
+.dark .shop-tokens,.dark.shop-tokens{--bg:#0b1120;--surface:#131b2e;--surface-2:#182136;--text:#e9eef6;--muted:#8f9ab2;--line:rgba(148,170,210,.13);--line-strong:rgba(148,170,210,.22);--accent:#2dd4bf;--accent-strong:#5eead4;--accent-soft:rgba(45,212,191,.12);--accent-line:rgba(45,212,191,.4)}
+.dark{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+/* ===== 设置页布局 ===== */
+.set-page{max-width:720px;margin:0 auto;padding:48px 20px 80px}
+.set-page h1{margin:0 0 8px;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.set-page .sub{margin:0 0 28px;color:var(--muted);font-size:14px}
+.set-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow-soft)}
+.set-card .row-t{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.set-card .row-t b{font-size:15px;font-weight:700}
+.set-card .row-t small{font-size:12.5px;color:var(--muted)}
+.set-card p.hint{margin:12px 0 0;font-size:12.5px;color:var(--muted);line-height:1.6}
+/* 分段选择器（与侧边栏统一） */
+.shop-seg{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:3px;gap:2px}
+.shop-seg button{flex:1;border:0;background:none;color:var(--muted);font:600 13.5px/1 var(--font-body);padding:11px 0;border-radius:11px;cursor:pointer;transition:all .22s;white-space:nowrap}
+.shop-seg button:hover{color:var(--text)}
+.shop-seg button.is-on{background:var(--surface);color:var(--accent-strong);box-shadow:0 2px 8px rgba(15,28,50,.12);font-weight:700}
+.dark .shop-seg button.is-on{color:#5eead4;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.set-card.is-soon{opacity:.65}
+.set-card.is-soon .soon-tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-size:11px;font-weight:600}
+@media(max-width:760px){.set-page{padding:28px 16px 120px}.set-page h1{font-size:22px}}
+</style>
+</head>
+<body class="shop-tokens">
+<!-- SHOP-SIDEBAR -->
+<style>
+/* ===== 全站左侧边栏 v5（胶囊导航：商品 / AI 客服 / 设置） ===== */
+.shop-sidebar{position:fixed;left:0;top:0;bottom:0;width:248px;z-index:9000;display:flex;flex-direction:column;background:var(--surface,#fff);border-right:1px solid var(--line,rgba(20,39,66,.11));padding:20px 14px 16px;transition:transform .32s cubic-bezier(.2,.8,.2,1)}
+/* Logo 行 */
+.shop-sb-toprow{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+a.shop-sb-logo{display:flex;align-items:center;gap:10px;padding:2px 6px;text-decoration:none;color:var(--text,#172033)}
+.shop-sb-logo .mark{width:44px;height:44px;flex:none;border-radius:13px;overflow:hidden;transition:transform .25s}
+a.shop-sb-logo:hover .mark{transform:scale(1.05)}
+.shop-sb-logo .mark img{width:100%;height:100%;display:block;object-fit:cover}
+.shop-sb-logo b{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.collapse-btn{display:grid;place-items:center;width:32px;height:32px;flex:none;border:0;border-radius:10px;background:none;color:var(--muted,#697487);cursor:pointer;transition:background .2s,color .2s}
+.collapse-btn:hover{background:var(--surface-2,#f0f4f8);color:var(--text,#172033)}
+.collapse-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* 胶囊导航 */
+.shop-sb-nav{display:flex;flex-direction:column;gap:8px}
+.shop-sb-pill{display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:999px;color:var(--muted,#697487);font-size:14px;font-weight:600;text-decoration:none;transition:background .2s,color .2s,transform .15s}
+.shop-sb-pill svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.shop-sb-pill:hover{background:var(--surface-2,#eef2f6);color:var(--text,#172033)}
+.shop-sb-pill:hover svg{transform:scale(1.08)}
+.shop-sb-pill:active{transform:scale(.98)}
+.shop-sb-pill.is-on{background:var(--accent-soft,rgba(18,168,154,.13));color:var(--accent-strong,#087f75);box-shadow:inset 0 0 0 1px rgba(18,168,154,.22)}
+.dark .shop-sb-pill.is-on{color:#5eead4}
+/* 隐藏态：侧边栏整个滑出 */
+body.sb-hidden .shop-sidebar{transform:translateX(-105%)}
+/* 主内容区让位：body 内边距方案，不破坏内部 max-width 居中 */
+body.has-shop-sidebar{padding-left:248px}
+body.sb-hidden.has-shop-sidebar{padding-left:0}
+/* 左上角展开浮钮 */
+.shop-sb-expand{display:none;position:fixed;left:14px;top:14px;z-index:9001;width:42px;height:42px;border-radius:14px;border:1px solid var(--line,rgba(20,39,66,.11));background:var(--surface,#fff);color:var(--muted,#697487);cursor:pointer;box-shadow:0 8px 24px rgba(15,28,50,.14);place-items:center;transition:color .2s,transform .15s}
+.shop-sb-expand:hover{color:var(--text,#172033)}
+.shop-sb-expand:active{transform:scale(.94)}
+.shop-sb-expand svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body.sb-hidden .shop-sb-expand{display:grid}
+@media(max-width:1023.98px){.shop-sb-expand{display:none!important}}
+/* ===== 移动端底部选项卡（替代侧边栏） ===== */
+.shop-tabbar{display:none}
+@media(max-width:1023.98px){
+  body.has-shop-sidebar{padding-left:20px}
+  /* 侧边栏及抽屉在移动端彻底隐藏 */
+  .shop-sidebar,.shop-sb-toggle,.shop-sb-expand,.shop-sb-mask{display:none!important}
+  /* 底部胶囊选项卡 */
+  .shop-tabbar{display:flex;position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:9000;background:var(--surface,#fff);border:1px solid var(--line,rgba(20,39,66,.11));border-radius:28px;box-shadow:0 12px 40px rgba(15,28,50,.18);padding:8px 6px}
+  .shop-tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 6px;border-radius:20px;color:var(--muted,#697487);font-size:11px;font-weight:600;text-decoration:none;transition:background .2s,color .2s}
+  .shop-tabbar a svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .shop-tabbar a:active{transform:scale(.96)}
+  .shop-tabbar a.is-on{color:var(--accent-strong,#087f75);background:var(--accent-soft,rgba(18,168,154,.13))}
+  .dark .shop-tabbar a.is-on{color:#5eead4}
+  /* 给底部选项卡留出空间 */
+  body.has-shop-sidebar{padding-bottom:96px}
+  /* AI 聊天页是 100dvh 固定高度，单独留出选项卡位置，避免输入框被盖住 */
+  .ai-page{height:calc(100dvh - 104px)!important}
+}
+@media (prefers-reduced-motion:reduce){.shop-sidebar,.shop-sb-pill,.shop-tabbar a{transition:none}}
+</style>
+<button class="shop-sb-expand" id="shopExpandBtn" aria-label="展开侧边栏"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9.5 4v16"/><path d="M13.5 12l2.5-2.5M13.5 12l2.5 2.5" stroke-width="1.6"/></svg></button>
+<aside class="shop-sidebar" id="shopSidebar" aria-label="站点导航">
+  <div class="shop-sb-toprow"><a class="shop-sb-logo" href="index.html"><span class="mark"><img src="logo.png" alt="为你精选"></span><b>为你精选</b></a><button class="collapse-btn" id="shopCollapseBtn" aria-label="收起侧边栏"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9.5 4v16"/><path d="M14.5 12l-2.5-2.5M14.5 12L12 14.5" stroke-width="1.6"/></svg></button></div>
+  <nav class="shop-sb-nav">
+    <a class="shop-sb-pill" data-sb="shop" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>商品</span></a>
+    <a class="shop-sb-pill" data-sb="chat" href="ai.html"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span>AI 客服</span></a>
+    <a class="shop-sb-pill" data-sb="settings" href="settings.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>设置</span></a>
+  </nav>
+</aside>
+<nav class="shop-tabbar" aria-label="底部导航">
+  <a data-sb="shop" href="index.html"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>商品</span></a>
+  <a data-sb="chat" href="ai.html"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg><span>AI 客服</span></a>
+  <a data-sb="settings" href="settings.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1 4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>设置</span></a>
+</nav>
+<script>(function(){
+document.body.classList.add('has-shop-sidebar');
+var p=location.pathname.split('/').pop()||'index.html';
+var cur='shop';
+if(p.indexOf('ai')===0)cur='chat';
+else if(p.indexOf('settings')===0)cur='settings';
+else if(p.indexOf('chatgpt')===0||p.indexOf('x-premium')===0)cur='shop';
+var els=document.querySelectorAll('[data-sb]');
+for(var i=0;i<els.length;i++)els[i].classList.toggle('is-on',els[i].getAttribute('data-sb')===cur);
+/* 收起/展开（桌面端） */
+var HK='shop-sb-hidden';
+function setHidden(o){document.body.classList.toggle('sb-hidden',o);try{localStorage.setItem(HK,o?'1':'0')}catch(e){}}
+try{
+var _h=localStorage.getItem(HK);
+if(_h===null&&localStorage.getItem('shop-sb-collapsed')==='1')_h='1';
+if(_h==='1'&&window.innerWidth>1023)document.body.classList.add('sb-hidden');
+}catch(e){}
+var cb=document.getElementById('shopCollapseBtn');
+if(cb)cb.addEventListener('click',function(){setHidden(true)});
+var eb=document.getElementById('shopExpandBtn');
+if(eb)eb.addEventListener('click',function(){setHidden(false)});
+/* 主题（设置页） */
+var K='shop-theme';
+function sysD(){return window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches}
+function mode(){try{return localStorage.getItem(K)||'auto'}catch(e){return'auto'}}
+function apply(){var m=mode();var d=m==='dark'||(m==='auto'&&sysD());document.documentElement.classList.toggle('dark',d);var b=document.querySelectorAll('#setThemes [data-theme],#shopSetThemes [data-theme]');for(var i=0;i<b.length;i++)b[i].classList.toggle('is-on',b[i].getAttribute('data-theme')===m)}
+function init(){apply();var b=document.querySelectorAll('#setThemes [data-theme],#shopSetThemes [data-theme]');for(var i=0;i<b.length;i++)(function(x){x.addEventListener('click',function(){try{localStorage.setItem(K,x.getAttribute('data-theme'))}catch(e){}apply()})})(b[i]);var mq=window.matchMedia&&matchMedia('(prefers-color-scheme:dark)');if(mq){var f=function(){if(mode()==='auto')apply()};if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f)}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();</script>
+
+
+
+
+<div class="set-page">
+  <h1>设置</h1>
+  <p class="sub">外观、主题与账户偏好</p>
+  <div class="set-card">
+    <div class="row-t"><b>外观</b><small>浅色 / 深色 / 跟随系统</small></div>
+    <div class="shop-seg" id="setThemes" role="group" aria-label="主题">
+      <button type="button" data-theme="light">浅色</button>
+      <button type="button" data-theme="dark">深色</button>
+      <button type="button" data-theme="auto">跟随系统</button>
+    </div>
+    <p class="hint">选择"跟随系统"后，网站外观会随手机/电脑的深色模式自动切换。</p>
+  </div>
+  <div class="set-card is-soon">
+    <div class="row-t"><b>账户<span class="soon-tag">即将上线</span></b></div>
+    <p class="hint">登录、订单记录等功能正在开发中，敬请期待。</p>
+  </div>
+</div>
+<script>
+(function(){
+var K='shop-theme';
+function sysD(){return window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches}
+function mode(){try{return localStorage.getItem(K)||'auto'}catch(e){return'auto'}}
+function apply(){var m=mode();var d=m==='dark'||(m==='auto'&&sysD());document.documentElement.classList.toggle('dark',d);var b=document.querySelectorAll('#setThemes [data-theme]');for(var i=0;i<b.length;i++)b[i].classList.toggle('is-on',b[i].getAttribute('data-theme')===m)}
+function init(){apply();var b=document.querySelectorAll('#setThemes [data-theme]');for(var i=0;i<b.length;i++)(function(x){x.addEventListener('click',function(){try{localStorage.setItem(K,x.getAttribute('data-theme'))}catch(e){}apply()})})(b[i]);var mq=window.matchMedia&&matchMedia('(prefers-color-scheme:dark)');if(mq){var f=function(){if(mode()==='auto')apply()};if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f)}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+</body>
+</html>
