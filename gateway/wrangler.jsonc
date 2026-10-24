@@ -1,0 +1,22 @@
+{
+  // shop-ai 客服网关配置
+  // 部署方式见 DEPLOY.md（推荐用 Cloudflare 仪表盘粘贴 worker.js，更省事）
+  "name": "shop-ai",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-01",
+  "ai": { "binding": "AI" },
+  "vars": {
+    // 默认模型（Cloudflare 免费可用列表里选，别选带付费标记的）
+    "CF_MODEL": "@cf/meta/llama-3.3-70b-instruct",
+    // 可选：自定义供应商顺序，如 "cloudflare,agnes,minimax"
+    // "PROVIDER_ORDER": "cloudflare,agnes,groq,gemini,minimax,sensenova,kimi",
+    // 各家地址默认已写好，一般不用改；Key 必须走 Secrets（wrangler secret put）
+    "AGNES_BASE": "https://apihub.agnes-ai.cn/v1",
+    "AGNES_MODEL": "agnes-2.5-flash",
+    "GROQ_MODEL": "llama-3.3-70b-versatile",
+    "GEMINI_MODEL": "gemini-2.5-flash",
+    "MINIMAX_MODEL": "MiniMax-M2",
+    "SENNOVA_MODEL": "sensenova-6.8-flash-lite",
+    "KIMI_MODEL": "kimi-k2-0711-preview"
+  }
+}

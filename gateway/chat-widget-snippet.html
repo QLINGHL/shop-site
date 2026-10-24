@@ -1,0 +1,76 @@
+<!-- AI 客服聊天框：粘到每个页面 </body> 前，然后走 build.py 重新构建再部署 -->
+<script>
+(function () {
+  // ★ 部署后把这里换成你的 shop-ai Worker 地址（形如 https://shop-ai.xxx.workers.dev）
+  var API = "https://__SHOP_AI_WORKER_URL__/api/chat";
+  var QUICK = ["多少钱？", "怎么发货？", "多久到账？", "售后怎么算？"];
+
+  var css = ""
+    + ".sai-fab{position:fixed;right:18px;bottom:18px;z-index:9999;width:52px;height:52px;border-radius:50%;"
+    + "background:#12a89a;color:#fff;border:none;font-size:24px;cursor:pointer;box-shadow:0 8px 24px rgba(18,168,154,.35)}"
+    + ".sai-panel{position:fixed;right:18px;bottom:80px;z-index:9999;width:min(340px,calc(100vw - 36px));height:440px;"
+    + "max-height:60vh;background:#fff;border-radius:14px;box-shadow:0 20px 55px rgba(31,51,79,.22);"
+    + "display:none;flex-direction:column;overflow:hidden;font-family:inherit}"
+    + ".sai-panel.open{display:flex}"
+    + ".sai-head{background:#12a89a;color:#fff;padding:12px 14px;font-size:15px;font-weight:600}"
+    + ".sai-body{flex:1;overflow-y:auto;padding:12px;font-size:14px;line-height:1.6;background:#f5f7fb}"
+    + ".sai-msg{margin:0 0 10px;max-width:88%}"
+    + ".sai-msg.bot{background:#fff;border:1px solid rgba(20,39,66,.1);border-radius:4px 12px 12px 12px;padding:8px 10px;color:#172033}"
+    + ".sai-msg.me{background:#12a89a;color:#fff;border-radius:12px 4px 12px 12px;padding:8px 10px;margin-left:auto}"
+    + ".sai-chips{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;background:#fff;border-top:1px solid rgba(20,39,66,.08)}"
+    + ".sai-chip{font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid rgba(18,168,154,.4);"
+    + "color:#087f75;background:#fff;cursor:pointer}"
+    + ".sai-input{display:flex;border-top:1px solid rgba(20,39,66,.08);background:#fff}"
+    + ".sai-input input{flex:1;border:none;outline:none;padding:12px;font-size:14px}"
+    + ".sai-input button{border:none;background:#12a89a;color:#fff;padding:0 16px;cursor:pointer;font-size:14px}";
+  var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+
+  var fab = document.createElement("button");
+  fab.className = "sai-fab"; fab.textContent = "💬"; fab.setAttribute("aria-label", "在线客服");
+  var panel = document.createElement("div"); panel.className = "sai-panel";
+  panel.innerHTML = '<div class="sai-head">在线客服</div>'
+    + '<div class="sai-body" id="saiBody"><p class="sai-msg bot">你好，我是店铺客服，可以问我价格、发货、售后👇</p></div>'
+    + '<div class="sai-chips" id="saiChips"></div>'
+    + '<div class="sai-input"><input id="saiIn" placeholder="输入问题…" maxlength="200">'
+    + '<button id="saiSend">发送</button></div>';
+  document.body.appendChild(fab); document.body.appendChild(panel);
+
+  var body = panel.querySelector("#saiBody"), input = panel.querySelector("#saiIn");
+  var chips = panel.querySelector("#saiChips");
+  QUICK.forEach(function (q) {
+    var b = document.createElement("button"); b.className = "sai-chip"; b.textContent = q;
+    b.onclick = function () { ask(q); }; chips.appendChild(b);
+  });
+  fab.onclick = function () { panel.classList.toggle("open"); };
+
+  var hist = [];
+  function addMsg(text, me) {
+    var p = document.createElement("p");
+    p.className = "sai-msg " + (me ? "me" : "bot");
+    p.textContent = text; body.appendChild(p);
+    body.scrollTop = body.scrollHeight;
+  }
+  var busy = false;
+  function ask(q) {
+    q = (q || "").trim(); if (!q || busy) return;
+    busy = true; addMsg(q, true); input.value = "";
+    hist.push({ role: "user", content: q });
+    var typing = document.createElement("p");
+    typing.className = "sai-msg bot"; typing.textContent = "正在输入…";
+    body.appendChild(typing); body.scrollTop = body.scrollHeight;
+    fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: hist.slice(-6) })
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      body.removeChild(typing);
+      if (j.reply) { addMsg(j.reply, false); hist.push({ role: "assistant", content: j.reply }); }
+      else { addMsg(j.error || "客服暂时不在线，请稍后再试", false); hist.pop(); }
+    }).catch(function () {
+      body.removeChild(typing); addMsg("网络开小差了，请稍后再试", false); hist.pop();
+    }).finally(function () { busy = false; });
+  }
+  panel.querySelector("#saiSend").onclick = function () { ask(input.value); };
+  input.onkeydown = function (e) { if (e.key === "Enter") ask(input.value); };
+})();
+</script>

@@ -6,3 +6,10 @@ staging-*/
 notes/
 *.zip
 *.tmp
+**/__pycache__/
+*.pyc
+.env
+*.db
+.venv/
+.wrangler/
+.dev.vars
